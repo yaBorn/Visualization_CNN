@@ -92,7 +92,28 @@
 		</div>
 
 		<!-- 画板 -->
-
+		<div id="canvasContainer">
+			<div id="drawingInterface">
+				<div class="instructions">此处写下数字</div>
+				<div class="board" id="custom-board"></div>
+				<div class="drawingOutput">
+					<div class="row">
+						<div class="info">输入图像:</div>
+						<div class="tinyBoard">
+							<canvas id="tiny"></canvas>
+						</div>
+					</div>
+					<div class="row">
+						<div class="info cell">最大可能:</div>
+						<div id="ans1" class="ans cell"></div>
+					</div>
+					<div class="row cell">
+						<div class="info cell">第二可能:</div>
+						<div id="ans2" class="ans cell"></div>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<!-- 链接 -->
 		<div id="linkback">Made by 
