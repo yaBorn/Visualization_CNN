@@ -33,6 +33,8 @@
   * [sylvester](http://sylvester.jcoglan.com/)
   * [stats.min](https://github.com/mrdoob/stats.js)
   * [tween.js](https://github.com/sole/tween.js)
+  * [katex.min](https://katex.org/)
+  * [three](https://github.com/mrdoob/three.js)
 
 ***
 ## ajax跨域
