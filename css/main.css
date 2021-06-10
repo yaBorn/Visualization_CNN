@@ -4,13 +4,13 @@ html, body {
 body {
     font-family: Arial;
     background-color: #222222;
-    background: rgb(60,100,140); /* Old browsers */
-    background: -moz-radial-gradient(center, ellipse cover,  rgba(60,100,140,1) 0%, rgba(20,20,20,1) 100%); /* FF3.6+ */
-    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(60,100,140,1)), color-stop(100%,rgba(20,20,20,1))); /* Chrome,Safari4+ */
-    background: -webkit-radial-gradient(center, ellipse cover,  rgba(60,100,140,1) 0%,rgba(20,20,20,1) 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-radial-gradient(center, ellipse cover,  rgba(60,100,140,1) 0%,rgba(20,20,20,1) 100%); /* Opera 12+ */
-    background: -ms-radial-gradient(center, ellipse cover,  rgba(60,100,140,1) 0%,rgba(20,20,20,1) 100%); /* IE10+ */
-    background: radial-gradient(ellipse at center,  rgba(60,100,140,1) 0%,rgba(20,20,20,1) 100%); /* W3C */
+    background: rgb(200,200,200); /* Old browsers */
+    background: -moz-radial-gradient(center, ellipse cover,  rgba(200,200,200,1) 0%, rgba(20,20,20,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(200,200,200,1)), color-stop(100%,rgba(20,20,20,1))); /* Chrome,Safari4+ */
+    background: -webkit-radial-gradient(center, ellipse cover,  rgba(200,200,200,1) 0%,rgba(20,20,20,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-radial-gradient(center, ellipse cover,  rgba(200,200,200,1) 0%,rgba(20,20,20,1) 100%); /* Opera 12+ */
+    background: -ms-radial-gradient(center, ellipse cover,  rgba(200,200,200,1) 0%,rgba(20,20,20,1) 100%); /* IE10+ */
+    background: radial-gradient(ellipse at center,  rgba(200,200,200,1) 0%,rgba(20,20,20,1) 100%); /* W3C */
 
     margin: 0;
     font-family: Arial;
@@ -292,5 +292,5 @@ input.cmn-toggle-yes-no:checked + label:after {
     padding: 5px;
 }
 a {
-    color:#06c;
+    color:#b1b1b1;
 }
