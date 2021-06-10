@@ -1,4 +1,4 @@
-# Visualization_Spiking-Neural-Network
+# Visualization_CNN
 神经网络可视化 （@_@）
 
 
