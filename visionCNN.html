@@ -1,0 +1,103 @@
+<!--
+	前端入口
+-->
+<!DOCTYPE html>
+
+<html lang="en">
+	<!-- 配置脚本 -->
+	<head>
+		<!-- 标题 css文件 -->
+		<title>CNN 网络可视化</title>
+		<link rel="stylesheet" href="../css/drawingboard2.css">
+		<link rel="stylesheet" href="../css/main.css?v=1.2">
+		<link rel="stylesheet" href="../css/katex.min.css">
+		
+		<!-- 视窗 字符集 -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<!-- 引入的外部库 -->
+		<script src="../js/import/three.min.js"></script> <!-- WebGL 3D -->
+		<script src="../js/import/GeometryUtils.js"></script>
+		<script src="../js/import/processing.min.js"></script>
+		<script src="../js/import/sylvester.src.js"></script> <!-- 矩阵运算 -->
+		<script src="../js/import/math.min.js"></script> 
+		<script src="../js/import/jquery-1.11.2.min.js"></script>
+		<script src="../js/import/stats.min.js"></script> <!-- 信息窗 -->
+
+		<!-- 画板脚本 -->
+		<script src="../js/drawingboard/utils.js"></script>
+		<script src="../js/drawingboard/board.js"></script>
+		<script src="../js/drawingboard/controls/control.js"></script>
+		<script src="../js/drawingboard/controls/color.js"></script>
+		<script src="../js/drawingboard/controls/drawingmode.js"></script>
+		<script src="../js/drawingboard/controls/navigation.js"></script>
+		<script src="../js/drawingboard/controls/size.js"></script>
+		<script src="../js/drawingboard/controls/download.js"></script>
+
+		<!-- cnn test 脚本 -->
+		<script src="../js/nn/convnet_weights.js"></script>
+		<script src="../js/nn/common.js"></script>
+		<script src="../js/nn/conv.js"></script>
+		<script src="../js/createText.js"></script>
+
+		<script src="../js/droid_sans_regular.typeface.js"></script>
+		<script src="../js/colormaps/myColorMap_dark.js"></script>
+
+		<!-- 相机控制 -->
+		<script src="../js/camera.js"></script>
+		<script src="../js/myOrbitControls.js"></script> 
+		<script src="../js/katex.min.js"></script>
+	</head>
+
+	<!-- 页面 -->
+	<body>
+		<!-- 鼠标选择组件框 -->
+		<div id="webgl_container">
+			<!-- 节点信息框 -->
+			<div id="infobox">
+				<!-- 位置信息 -->
+				<div id="nodeType"></div>
+
+				<!-- 显示框 -->
+				<div id="imageInputContainer">
+					<div id="inputImage">
+						<div class="label" id="imageLabel">输入图像块:</div>
+						<div id="inputCanvasContainer">
+							<canvas id="inputCanvas"></canvas>
+						</div>
+					</div>
+					<div id="filterImage">
+						<div class="label" id="filterLabel">卷积核:</div>
+						<div id="filterCanvasContainer">
+							<canvas id="filterCanvas"></canvas>
+						</div>
+					</div>
+				</div>
+
+				<!-- 信息框 -->
+				<div id="nodeInputContainer">
+					<div class="label">该元素权重: </div>
+					<div id="nodeInput" class="math"></div>
+				</div>
+				<div id="calcContainer">
+					<div class="label">预测: </div>
+					<div id="calc" class="math"></div>
+				</div>
+				<div id="nodeOutputContainer">
+					<div class="label">输出: </div>
+					<div id="nodeOutput" class="math"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 画板 -->
+
+
+		<!-- 链接 -->
+		<div id="linkback">Made by 
+			<a href="https://github.com/yaBorn">YangBowen</a>
+			、<a href="https://github.com/hd233yui">HuangDonghao</a>
+		</div>
+	</body>
+</html>
