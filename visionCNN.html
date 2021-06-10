@@ -125,6 +125,10 @@
     <!-- 运行脚本 -->
     <script>
 
+		init();
+		loadData();
+		animate();
+
 		// 网络初始化
 		function init() {
 			container = document.getElementById("webgl_container");
@@ -203,6 +207,31 @@
 			camera.updateProjectionMatrix(); // 更新视角
 			renderer.setSize(window.innerWidth, window.innerHeight);
 			render();
+		}
+
+		// 加载数据 更新 CNN
+		function loadData() {
+			var nodeCount = 0;
+			// CNN 开始卷积
+			$.getJSON('./../js/nn/webgl_convnet2.json', function (data) {
+				$.each(data.nodes, function (i, node) {
+					posX[nodeCount] = node.x;
+					posY[nodeCount] = node.y;
+					posZ[nodeCount] = node.z;
+					layerNum[nodeCount] = node.layerNum;
+					nodeCount++;
+				});
+			})
+			.error(function () {
+				console.log('error');
+			})
+			.done(function () {
+				// 根据每层的矩阵数据 绘制节点块
+				setupWeightArrays(); // 更新权重
+				createText(nums, 0, 100);
+				drawCubes(); // 绘制块
+				drawEdges();
+			});
 		}
 
         // 网络模型渲染
