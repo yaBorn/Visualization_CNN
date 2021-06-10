@@ -1,5 +1,6 @@
 # Visualization_CNN
 神经网络可视化
+
 ***
 ## TODO
 ### 1. \\(=▽=)ゝ 神经网络可视化，仅视觉效果：  
@@ -22,8 +23,20 @@
   * 将网络结点用上述 1.方法表现。  
   * 有不明觉厉的视觉效果基础上，完成手写数字识别的任务，更加不明觉厉，好耶！  
 ***
+
+## 外部库
+  * [math.min](https://mathjs.org/)
+  * [jquery 1.11.2](https://jquery.com/)
+  * [processing 1.6.6](https://github.com/processing-js/processing-js)
+  * [three.min](https://threejs.org/)
+  * [GeometryUtils](https://developer.mozilla.org/en-US/docs/Web/API/GeometryUtils)
+  * [sylvester](http://sylvester.jcoglan.com/)
+  * [stats.min](https://github.com/mrdoob/stats.js)
+  * [tween.js](https://github.com/sole/tween.js)
+
+***
 ## ajax跨域
-##### 本地调试，可视化网络无法显示，控制台信息：
+##### 本地调试 ***visionCNN.html*** ，可视化网络无法显示，控制台信息：
 `Access to XMLHttpRequest at '@/js/nn/webgl_convnet2.json' from origin 'null' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-extension, chrome-untrusted, https.`
 
 `GET file://@/js/nn/webgl_convnet2.json net::ERR_FAILED`
@@ -45,4 +58,5 @@
 | DrawingBoard.Board | @	board.js:331|
 | (anonymous)	| @	3d.html:279|
 ##### ***请使用本地服务器进行调试***
-  - 推荐通过 VScode **LiveSever** open with live sever 调试
+  - 推荐通过 VScode **LiveSever** open with live sever 调试 ***visionCNN.html***
+***
