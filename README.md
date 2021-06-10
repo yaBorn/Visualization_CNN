@@ -38,7 +38,7 @@
 
 ***
 ## ajax跨域
-##### 本地调试 ***visionCNN.html*** ，可视化网络无法显示，控制台信息：
+### 本地调试 ***visionCNN.html*** ，可视化网络无法显示，控制台信息：
 `Access to XMLHttpRequest at '@/js/nn/webgl_convnet2.json' from origin 'null' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-extension, chrome-untrusted, https.`
 
 `GET file://@/js/nn/webgl_convnet2.json net::ERR_FAILED`
@@ -59,6 +59,6 @@
 | restoreWebStorage	| @	board.js:331|
 | DrawingBoard.Board | @	board.js:331|
 | (anonymous)	| @	3d.html:279|
-##### ***请使用本地服务器进行调试***
+### ***请使用本地服务器进行调试***
   - 推荐通过 VScode **LiveSever** open with live sever 调试 ***visionCNN.html***
 ***
