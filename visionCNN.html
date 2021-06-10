@@ -124,6 +124,456 @@
 
     <!-- 运行脚本 -->
     <script>
-        
+        // 网络模型渲染
+        function animate() {
+			requestAnimationFrame(animate);
+			
+			// 光标选中某节点
+			if (!rotatingCam) {
+				pick(); // 选中节点
+				updateEdges(); // 绘制上一层连接到该节点的射线
+			}
+
+			// 点击某个box 显示节点信息框
+			if (!highlightBox.visible) {
+				document.getElementById("infobox").style.visibility = "hidden";
+			}
+			renderer.render(scene, camera);
+            
+            // 更新界面
+			stats.update();
+		}
+        // 鼠标置于节点 绘制射线
+		function updateEdges() {
+			var r = 1, g = 1, b = 1, rw = 1, gw, bw, i, j, v, colorNum, weight;
+			var vertAdjust = 3;
+			var numChildren = scene.children.length;
+			var colors = [];
+			vertCount = 0;
+			// 遍历场景对象到网络窗口
+			for (var c = 0; c < numChildren; c++) {
+				if (scene.children[c].name == 'edges') {
+					var object = scene.children[c];
+					object.geometry.dispose();
+
+					var lineGeom = new THREE.Geometry();
+					lineGeom.dynamic = true;
+					
+					// 如果光标选择节点
+					if (highlightBox.visible) {
+						ind = interID;
+						// 节点属于卷积层 1
+						if (layerNum[interID] == 1) {
+							// 遍历前一层连接节点
+							// 强度与卷积核同值
+							for (j = 1; j <= nPixels; j++) {
+								ind_below = j - 1;
+								temp_below = allNodeNums[ind_below] - 1;
+								var row_below = temp_below % 32;
+								var col_below = math.floor(temp_below / 32);
+
+								if (row_below > row - 1 && row_below < row + 5 && col_below > col - 1 && col_below < col + 5) {
+									var ro = row_below - row;
+									var co = col_below - col;
+									var weight = conv_nodes[0][filterNum].e(ro + 1, co + 1);
+
+									if (input_hide)
+										vertAdjust = 0;
+
+									lineGeom.vertices.push(new THREE.Vector3(posX[ind_below], posY[ind_below] + vertAdjust, posZ[ind_below]));
+									lineGeom.vertices.push(new THREE.Vector3(posX[ind], posY[ind] - 3, posZ[ind]));
+
+									if (isComputed) {
+										v = allNodeOutputs[ind_below];
+										colorNum = math.round(v * 99);
+										r = redLookup[colorNum];
+										g = greenLookup[colorNum];
+										b = blueLookup[colorNum];
+									} else {
+										r = 0.7;
+										g = 0.7;
+										b = 0.7;
+									}
+									v = conv_weights_1a[filterNum][ro][co];
+									colorNum = math.round(v * 99);
+									rw = 0;
+									gw = greenLookup[colorNum];
+									bw = blueLookup[colorNum];
+
+									colors[vertCount] = new THREE.Color(rw, gw, bw);
+									vertCount++;
+									colors[vertCount] = new THREE.Color(rw, gw, bw);
+									vertCount++;
+								}
+							}
+						} 
+						// 属于池化层1
+						else if (layerNum[interID] == 2) {
+							for (j = 1; j <= nConvNodes_1; j++) {
+								ind_below = nPixels + j - 1;
+								temp_below = allNodeNums[ind_below] - 1;
+								filterNum_below = math.floor((ind_below - nPixels) / (28 * 28));
+								var row_below = temp_below % 28;
+								var col_below = math.floor(temp_below / 28);
+								if (filterNum_below == filterNum) {
+									if (math.floor(row_below / 2) == row && math.floor(col_below / 2) == col) {
+										var ro = row_below - row;
+										var co = col_below - col;
+
+										if (conv1_hide)
+											vertAdjust = 0;
+
+										lineGeom.vertices.push(new THREE.Vector3(posX[ind_below], posY[ind_below] + vertAdjust, posZ[ind_below]));
+										lineGeom.vertices.push(new THREE.Vector3(posX[ind], posY[ind] - 3, posZ[ind]));
+
+										if (isComputed) {
+											v = allNodeOutputs[ind_below];
+											colorNum = math.round(v * 99);
+											r = redLookup[colorNum];
+											g = greenLookup[colorNum];
+											b = blueLookup[colorNum];
+										} else {
+											r = 0.7;
+											g = 0.7;
+											b = 0.7;
+										}
+										v = 1;
+										colorNum = math.round(v * 99);
+										rw = 0;
+										gw = greenLookup[colorNum];
+										bw = blueLookup[colorNum];
+
+										colors[vertCount] = new THREE.Color(rw, gw, bw);
+										vertCount++;
+										colors[vertCount] = new THREE.Color(rw, gw, bw);
+										vertCount++;
+									}
+								}
+							}
+						} 
+						// 节点属于卷积层 2
+						else if (layerNum[interID] == 3) {
+							for (j = 1; j <= nConvNodes_1_down; j++) {
+								ind_below = nPixels + nConvNodes_1 + j - 1;
+								temp_below = allNodeNums[ind_below] - 1;
+								filterNum_below = math.floor((ind_below - nPixels - nConvNodes_1) / (14 * 14));
+								var row_below = temp_below % 14;
+								var col_below = math.floor(temp_below / 14);
+								if (keepers.e(filterNum_below + 1, filterNum + 1) == 1) {
+									if (row_below > row - 1 && row_below < row + 5 && col_below > col - 1 && col_below < col + 5) {
+										var ro = row_below - row;
+										var co = col_below - col;
+										var filterKeeper = keeperIndices[filterNum][filterNum_below];
+										var weight = conv_nodes[1][filterNum][filterKeeper].e(ro + 1, co + 1);
+
+										if (down1_hide)
+											vertAdjust = 0;
+
+										lineGeom.vertices.push(new THREE.Vector3(posX[ind_below], posY[ind_below] + vertAdjust, posZ[ind_below]));
+										lineGeom.vertices.push(new THREE.Vector3(posX[ind], posY[ind] - 3, posZ[ind]));
+
+										if (isComputed) {
+											v = allNodeOutputs[ind_below];
+											colorNum = math.round(v * 99);
+											r = redLookup[colorNum];
+											g = greenLookup[colorNum];
+											b = blueLookup[colorNum];
+										} else {
+											r = 0.7;
+											g = 0.7;
+											b = 0.7;
+										}
+										v = conv_weights_2a[filterNum][filterNum_below][ro][co];
+										colorNum = math.round(v * 99);
+										rw = 0;
+										gw = greenLookup[colorNum];
+										bw = blueLookup[colorNum];
+
+										colors[vertCount] = new THREE.Color(rw, gw, bw);
+										vertCount++;
+										colors[vertCount] = new THREE.Color(rw, gw, bw);
+										vertCount++;
+									}
+								}
+							}
+						} 
+						// 节点属于池话层 2
+						else if (layerNum[interID] == 4) {
+							for (j = 1; j <= nConvNodes_1; j++) {
+								ind_below = nPixels + nConvNodes_1 + nConvNodes_1_down + j - 1;
+								temp_below = allNodeNums[ind_below] - 1;
+								filterNum_below = math.floor((ind_below - nPixels - nConvNodes_1 - nConvNodes_1_down) / (10 * 10));
+								var row_below = temp_below % 10;
+								var col_below = math.floor(temp_below / 10);
+								if (filterNum_below == filterNum) {
+									if (math.floor(row_below / 2) == row && math.floor(col_below / 2) == col) {
+										var ro = row_below - row;
+										var co = col_below - col;
+
+										if (conv2_hide)
+											vertAdjust = 0;
+
+										lineGeom.vertices.push(new THREE.Vector3(posX[ind_below], posY[ind_below] + vertAdjust, posZ[ind_below]));
+										lineGeom.vertices.push(new THREE.Vector3(posX[ind], posY[ind] - 3, posZ[ind]));
+
+										if (isComputed) {
+											v = allNodeOutputs[ind_below];
+											colorNum = math.round(v * 99);
+											r = redLookup[colorNum];
+											g = greenLookup[colorNum];
+											b = blueLookup[colorNum];
+										} else {
+											r = 0.7;
+											g = 0.7;
+											b = 0.7;
+										}
+										v = 1;
+										colorNum = math.round(v * 99);
+										rw = 0;
+										gw = greenLookup[colorNum];
+										bw = blueLookup[colorNum];
+
+										colors[vertCount] = new THREE.Color(rw, gw, bw);
+										vertCount++;
+										colors[vertCount] = new THREE.Color(rw, gw, bw);
+										vertCount++;
+									}
+								}
+							}
+						} 
+						// 节点属于隐含层1
+						else if (layerNum[interID] == 5) {
+							for (j = 1; j <= nConvNodes_2_down; j++) {
+
+								ind_below = nPixels + nConvNodes_1 + nConvNodes_1_down + nConvNodes_2 + j - 1;
+								var weight = hidden_weights_1.e(allNodeNums[ind], allNodeNums[ind_below]);
+
+								if (down2_hide)
+									vertAdjust = 0;
+
+								lineGeom.vertices.push(new THREE.Vector3(posX[ind_below], posY[ind_below] + vertAdjust, posZ[ind_below]));
+								lineGeom.vertices.push(new THREE.Vector3(posX[ind], posY[ind] - 3, posZ[ind]));
+
+								if (isComputed) {
+									v = allNodeOutputs[ind_below];
+									colorNum = math.round(v * 99);
+									r = redLookup[colorNum];
+									g = greenLookup[colorNum];
+									b = blueLookup[colorNum];
+								} else {
+									r = 0.7;
+									g = 0.7;
+									b = 0.7;
+								}
+								v = hidden_weights_1a[allNodeNums[ind] - 1][allNodeNums[ind_below] - 1];
+								colorNum = math.round(v * 99);
+								rw = 0;
+								gw = greenLookup[colorNum];
+								bw = blueLookup[colorNum];
+
+								colors[vertCount] = new THREE.Color(rw, gw, bw);
+								vertCount++;
+								colors[vertCount] = new THREE.Color(rw, gw, bw);
+								vertCount++;
+							}
+						} 
+						// 节点属于隐含层2
+						else if (layerNum[interID] == 6) {
+							for (j = 1; j <= nHiddenNodes_1; j++) {
+								ind_below = nPixels + nConvNodes_1 + nConvNodes_1_down + nConvNodes_2 + nConvNodes_2_down + j - 1;
+								var weight = hidden_weights_2.e(allNodeNums[ind], allNodeNums[ind_below]);
+
+								if (fc1_hide)
+									vertAdjust = 0;
+
+								lineGeom.vertices.push(new THREE.Vector3(posX[ind_below], posY[ind_below] + vertAdjust, posZ[ind_below]));
+								lineGeom.vertices.push(new THREE.Vector3(posX[ind], posY[ind] - 3, posZ[ind]));
+								if (isComputed) {
+									v = allNodeOutputs[ind_below];
+									colorNum = math.round(v * 99);
+									r = redLookup[colorNum];
+									g = greenLookup[colorNum];
+									b = blueLookup[colorNum];
+								} else {
+									r = 0.7;
+									g = 0.7;
+									b = 0.7;
+								}
+								v = hidden_weights_2a[allNodeNums[ind] - 1][allNodeNums[ind_below] - 1];
+								colorNum = math.round(v * 99);
+								rw = 0;
+								gw = greenLookup[colorNum];
+								bw = blueLookup[colorNum];
+
+								colors[vertCount] = new THREE.Color(rw, gw, bw);
+								vertCount++;
+								colors[vertCount] = new THREE.Color(rw, gw, bw);
+								vertCount++;
+							}
+						} 
+						// 节点属于输出层
+						else if (layerNum[interID] == 7) {
+							for (j = 1; j <= nHiddenNodes_2; j++) {
+								ind_below = nPixels + nConvNodes_1 + nConvNodes_1_down + nConvNodes_2 + nConvNodes_2_down + nHiddenNodes_1 + j - 1;
+								var weight = final_weights.e(allNodeNums[ind], allNodeNums[ind_below]);
+
+								if (fc2_hide)
+									vertAdjust = 0;
+
+								lineGeom.vertices.push(new THREE.Vector3(posX[ind_below], posY[ind_below] + vertAdjust, posZ[ind_below]));
+								lineGeom.vertices.push(new THREE.Vector3(posX[ind], posY[ind] - 3, posZ[ind]));
+								if (isComputed) {
+									v = allNodeOutputs[ind_below];
+									colorNum = math.round(v * 99);
+									r = redLookup[colorNum];
+									g = greenLookup[colorNum];
+									b = blueLookup[colorNum];
+								} else {
+									r = 0.7;
+									g = 0.7;
+									b = 0.7;
+								}
+								v = final_weightsa[allNodeNums[ind] - 1][allNodeNums[ind_below] - 1];
+								colorNum = math.round(v * 99);
+								rw = 0;
+								gw = greenLookup[colorNum];
+								bw = blueLookup[colorNum];
+
+								colors[vertCount] = new THREE.Color(rw, gw, bw);
+								vertCount++;
+								colors[vertCount] = new THREE.Color(rw, gw, bw);
+								vertCount++;
+							}
+						}
+						v = allNodeOutputs[ind];
+						colorNum = math.round(v * 99);
+						r = redLookup[colorNum];
+						g = greenLookup[colorNum];
+						b = blueLookup[colorNum];
+
+					}
+					var lineMat = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 1, linewidth: 1, vertexColors: THREE.VertexColors });
+					object.material = lineMat;
+					object.geometry.colors = colors;
+					object.geometry.vertices = lineGeom.vertices;
+					object.material.needsUpdate = true;
+					object.geometry.colorsNeedUpdate = true;
+					object.geometry.verticesNeedUpdate = true;
+					break;
+				}
+			}
+		}
+		// 鼠标选中节点 显示节点信息
+		function pick() {
+			// 平面显示 选择节点信息框
+			renderer.render(pickingScene, camera, pickingTexture);
+			// 读取单个像素的内内存
+			var pixelBuffer = new Uint8Array(4);
+			// 读取光标选中的节点纹理数据
+			renderer.readRenderTargetPixels(pickingTexture, mouse.x, pickingTexture.height - mouse.y, 1, 1, pixelBuffer);
+			// 置为id
+			var id = (pixelBuffer[0] << 16) | (pixelBuffer[1] << 8) | (pixelBuffer[2]);
+			var data = pickingData[id];
+
+			// 点击节点对象
+			if (data && pixelBuffer[3]) {
+				var temp = pickingData[id].id;
+				//console.log('id = ' + id);
+				if (!((input_hide && temp < nPixels) ||
+					(conv1_hide && temp >= nPixels && temp < nPixels + nConvNodes_1) ||
+					(down1_hide && temp >= nPixels + nConvNodes_1 && temp < nPixels + nConvNodes_1 + nConvNodes_1_down) ||
+					(conv2_hide && temp >= nPixels + nConvNodes_1 + nConvNodes_1_down && temp < nPixels + nConvNodes_1 + nConvNodes_1_down + nConvNodes_2) ||
+					(down2_hide && temp >= nPixels + nConvNodes_1 + nConvNodes_1_down + nConvNodes_2 && temp < nPixels + nConvNodes_1 + nConvNodes_1_down + nConvNodes_2 + nConvNodes_2_down) ||
+					(fc1_hide && temp >= nPixels + nConvNodes_1 + nConvNodes_1_down + nConvNodes_2 + nConvNodes_2_down && temp < nPixels + nConvNodes_1 + nConvNodes_1_down + nConvNodes_2 + nConvNodes_2_down + nHiddenNodes_1) ||
+					(fc2_hide && temp >= nPixels + nConvNodes_1 + nConvNodes_1_down + nConvNodes_2 + nConvNodes_2_down + nHiddenNodes_1 && temp < nPixels + nConvNodes_1 + nConvNodes_1_down + nConvNodes_2 + nConvNodes_2_down + nHiddenNodes_1 + nHiddenNodes_2) ||
+					(output_hide && temp >= nPixels + nConvNodes_1 + nConvNodes_1_down + nConvNodes_2 + nConvNodes_2_down + nHiddenNodes_1 + nHiddenNodes_2 && temp < nPixels + nConvNodes_1 + nConvNodes_1_down + nConvNodes_2 + nConvNodes_2_down + nHiddenNodes_1 + nHiddenNodes_2 + nFinalNodes))) {
+					// 获取该节点位于网络层id
+					interID = pickingData[id].id;
+
+					// 根据节点位置 绘制节点信息
+					if (layerNum[interID] == 0) {
+						nodeType = "输入层";
+						filterNum = -1;
+						tempInd = allNodeNums[interID] - 1;
+						row = (tempInd) % 32;
+						col = math.floor(tempInd / 32);
+					} 
+					else if (layerNum[interID] == 1) {
+						nodeType = "卷积层 1";
+						filterNum = math.floor((interID - nPixels) / (28 * 28));
+						tempInd = allNodeNums[interID] - 1;
+						row = (tempInd) % 28;
+						col = math.floor(tempInd / 28);
+					} 
+					else if (layerNum[interID] == 2) {
+						nodeType = "池化层 1";
+						filterNum = math.floor((interID - nPixels - nConvNodes_1) / (14 * 14));
+						tempInd = allNodeNums[interID] - 1;
+						row = (tempInd) % 14;
+						col = math.floor(tempInd / 14);
+					} 
+					else if (layerNum[interID] == 3) {
+						nodeType = "卷积层 2";
+						filterNum = math.floor((interID - nPixels - nConvNodes_1 - nConvNodes_1_down) / (10 * 10));
+						tempInd = allNodeNums[interID] - 1;
+						row = (tempInd) % 10;
+						col = math.floor(tempInd / 10);
+					} 
+					else if (layerNum[interID] == 4) {
+						nodeType = "池化层 2";
+						filterNum = math.floor((interID - nPixels - nConvNodes_1 - nConvNodes_1_down - nConvNodes_2) / (5 * 5));
+						tempInd = allNodeNums[interID] - 1;
+						row = (tempInd) % 5;
+						col = math.floor(tempInd / 5);
+					} 
+					else if (layerNum[interID] == 5) {
+						nodeType = "全连接层 1";
+						filterNum = -1
+					} 
+					else if (layerNum[interID] == 6) {
+						nodeType = "全连接层 2";
+						filterNum = -1
+					} 
+					else if (layerNum[interID] == 7) {
+						nodeType = "输出层";
+						filterNum = -1
+					}
+
+					// 移动高亮块到鼠标选择的对象 实现选中效果
+					if (data.position && data.rotation && data.scale) {
+						highlightBox.position.copy(data.position);
+						highlightBox.rotation.copy(data.rotation);
+						highlightBox.visible = true;
+						intersected = true;
+						updateInfoBoxPos();
+					}
+				}
+			}
+			// 未点击 则高亮块不显示
+			else {
+				highlightBox.visible = false;
+				intersected = false;
+			}
+
+			// 设置显示的高亮块
+			if (highlightBox.visible == true) {
+				var r, g, b;
+				if (isComputed) {
+					// 高亮块显示参数与 光标选中对象一致
+					var v = allNodeOutputs[interID];
+					var colorNum = math.round(v * 99);
+					r = redLookup[colorNum];
+					g = greenLookup[colorNum];
+					b = blueLookup[colorNum];
+				} 
+				else {
+					r = 0, g = 0, b = 0;
+				}
+				highlightBox.material.color.setRGB(r, g, b);
+				highlightBox.material.needsUpdate = true;
+				updateInfoBox();
+			}
+		}
+    
     </script>
 </html>
