@@ -1,7 +1,6 @@
 # Visualization_CNN
 神经网络可视化
 1803 杨博文
-1803 黄东豪
 **提供demo：** [Demo](https://www.yaborn.com/Visualization_CNN/main/visionCNN.html)
 ***
 ## TODO
